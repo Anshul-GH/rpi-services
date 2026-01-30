@@ -1,0 +1,20 @@
+1. Check Status
+sudo systemctl status amazon-price-tracker --no-pager -l | head -20
+
+2. Check the running service status
+ps aux | grep amazon_price_tracker.py
+
+3. Stop the running service
+sudo systemctl stop amazon-price-tracker
+
+4. Updated the watchlist
+nano amazon_watchlist.txt
+
+5. Start the running service
+sudo systemctl start amazon-price-tracker
+
+6. Create a backup of the code file
+cp amazon_price_tracker.py amazon_price_tracker.py.bak.$(date +%Y%m%d_%H%M).py
+
+7. Restart the service
+sudo systemctl restart amazon-price-tracker
