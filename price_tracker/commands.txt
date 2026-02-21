@@ -17,6 +17,8 @@ sudo systemctl start amazon-price-tracker
 6. Create a backup of the code file
 cp amazon_price_tracker.py amazon_price_tracker.py.bak.$(date +%Y%m%d_%H%M).py
 cp constants.py constants.py.bak.$(date +%Y%m%d_%H%M).py
+cp camel_curl_poller.py camel_curl_poller.py.bak.$(date +%Y%m%d_%H%M).py
+cp stable_bot.py stable_bot.py.bak.$(date +%Y%m%d_%H%M).py
 
 7. Restart the service
 sudo systemctl restart amazon-price-tracker
