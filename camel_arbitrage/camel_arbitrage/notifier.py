@@ -1,79 +1,35 @@
 import requests
 import constants
-import re
+import time
 
 class TelegramNotifier:
     def __init__(self):
         self.api_url = f"https://api.telegram.org/bot{constants.CC_BOT_TOKEN}/sendMessage"
 
-    def escape_html(self, text):
-        """Escape HTML special characters"""
-        if not text:
-            return "Unknown Product"
-        chars = ['&', '<', '>', '"']
-        for char in chars:
-            text = text.replace(char, f'&#{ord(char)};')
-        return text[:100]
-
-    def _get_product_title(self, asin):
-        """Extract real product name from Amazon page"""
-        try:
-            url = f"https://amazon.com/dp/{asin}"
-            r = requests.get(url, headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120'
-            }, timeout=8)
-            
-            # Multiple selectors for product title
-            title_selectors = [
-                r'id=["\']productTitle["\'][^>]*>([^<]+?)<',
-                r'"name"\s*:\s*"([^"]+?)"',
-                r'<span[^>]*id="productTitle"[^>]*>([^<]+?)</span>'
-            ]
-            
-            for selector in title_selectors:
-                match = re.search(selector, r.text, re.IGNORECASE | re.DOTALL)
-                if match:
-                    title = re.sub(r'\s+', ' ', match.group(1).strip())
-                    return self.escape_html(title)
-            
-            return f"Top Drop ASIN {asin}"
-            
-        except Exception as e:
-            print(f"⚠️ Title fetch failed for {asin}: {e}")
-            return f"Top Drop ASIN {asin}"
-
-    def send_alert(self, deal, price):
-        """Send formatted Telegram alert for ALL deals"""
+    def send_alert(self, deal):
+        """Send clean Amazon URL with mandatory preview"""
         try:
             asin = deal['asin']
-            product_title = self._get_product_title(asin)
+            amazon_url = f"https://amazon.com/dp/{asin}"
             
-            text = f"""
-🚨 *CamelCamelCamel TOP DROP DETECTED* 🚨
-
-*{product_title}*
-
-📦 *ASIN*: `{asin}`
-💰 *Amazon Price*: {price}
-🛒 *Buy*: {deal['amazon_url']}
-📉 *Camel Chart*: {deal['camel_url']}
-
-#camelintel #arbitrage
-            """.strip()
-
-            print(f"📤 Sending to chat {constants.CC_CHAT_ID}...")
-            response = requests.post(self.api_url, data={
+            print(f"📤 Sending {amazon_url} to chat {constants.CC_CHAT_ID}...")
+            
+            # Use json parameter with boolean False for disable_web_page_preview
+            payload = {
                 'chat_id': constants.CC_CHAT_ID,
-                'text': text,
-                'parse_mode': 'Markdown',  # Fixed: Use Markdown (more reliable)
-                'disable_web_page_preview': 'false'
-            }, timeout=10)
-
-            print(f"📥 Status: {response.status_code}")
+                'text': amazon_url,
+                'disable_web_page_preview': False,
+                'disable_notification': False
+            }
+            
+            response = requests.post(self.api_url, json=payload, timeout=10)
+            
             if response.status_code == 200:
-                print(f"✅ Alert: {asin} ({product_title[:40]})")
+                print(f"✅ Sent: {amazon_url}")
+                print(f"⏳ Waiting {constants.MESSAGE_DELAY}s for preview generation...")
+                time.sleep(constants.MESSAGE_DELAY)  # Delay to allow preview to load
             else:
-                print(f"❌ Telegram: {response.text}")
-
+                print(f"❌ Telegram error [{response.status_code}]: {response.text}")
+                
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f"❌ Error sending {deal.get('asin', 'unknown')}: {e}")
