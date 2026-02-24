@@ -8,11 +8,11 @@ SD_RSS_URLS = [
 SD_SEENFILE = "sd_seen_urls.txt"
 
 # Telegram bot + chat for Slickdeals alerts (NEW BOT)
-SD_BOTTOKEN = "7703886459:AAHeBHPoZXRsijGRkWPIYihOzpBlLI3vN1M"
-SD_CHATID = "7574355748"
+SD_BOTTOKEN = ""
+SD_CHATID = ""
 
 # Your Slickdeals referral user id
-SD_USERID = "33621454"
+SD_USERID = ""
 
 # Minimum likes threshold
 MIN_LIKES = 0

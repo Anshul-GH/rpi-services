@@ -15,8 +15,8 @@ from telegram.error import TelegramError
 
 # CONFIGURATION
 MAIL_FILE = '/var/mail/piblack'
-BOT_TOKEN = "8021538092:AAH7fPQMMrxXPl0A3LahbfoGWEeNO-9ZLx0"
-CHAT_ID = "7574355748"
+BOT_TOKEN = ""
+CHAT_ID = ""
 JUNK_FILE = '/home/piblack/mail_junk.txt'
 ARCHIVE_FILE = '/home/piblack/mail_archive.txt'
 
